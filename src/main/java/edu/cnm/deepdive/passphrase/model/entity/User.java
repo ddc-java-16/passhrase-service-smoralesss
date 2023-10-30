@@ -12,15 +12,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -29,26 +26,27 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.lang.NonNull;
 
 @Entity
+@Table(name = "user_profile")
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({"id", "created", "modified", "name"})
-public class Passphrase {
+@JsonPropertyOrder({"id", "created", "modified", "displayName"})
+public class User {
 
   @Id
   @NonNull
-  @Column(name = "passphrase_id", updatable = false)
   @GeneratedValue
+  @Column(name = "user_profile_id", nullable = false, updatable = false)
   @JsonIgnore
   private Long id;
 
   @NonNull
-  @Column(updatable = false, nullable = false, unique = true, columnDefinition = "UUID")
-  @JsonProperty(value = "id", access = Access.READ_ONLY)
+  @Column(nullable = false, updatable = false, unique = true, columnDefinition = "UUID")
+  @JsonProperty(namespace = "id", access = Access.READ_ONLY)
   private UUID key;
 
   @NonNull
   @CreationTimestamp
   @Temporal(TemporalType.TIMESTAMP)
-  @Column(updatable = false, nullable = false)
+  @Column(nullable = false, updatable = false)
   @JsonProperty(access = Access.READ_ONLY)
   private Instant created;
 
@@ -59,24 +57,19 @@ public class Passphrase {
   @JsonProperty(access = Access.READ_ONLY)
   private Instant modified;
 
-  @NonNull
-  @Column(nullable = false)
-  private String name;
+  private String displayName;
 
   @NonNull
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false, updatable = false)
+  @Column(nullable = false, updatable = false, unique = true, length = 30)
   @JsonIgnore
-  private User user;
+  private String oauthKey;
 
   @NonNull
-  @OneToMany(mappedBy = "passphrase", fetch = FetchType.EAGER,
-      cascade = CascadeType.ALL, orphanRemoval = true)
-  @OrderBy("order ASC")
-  private final List<Word> words = new LinkedList<>();
-
-  @Transient
-  private transient int length;
+  @OneToMany(
+      mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  @OrderBy("name ASC")
+  @JsonIgnore
+  private final List<Passphrase> passphrases = new LinkedList<>();
 
   @NonNull
   public Long getId() {
@@ -98,35 +91,26 @@ public class Passphrase {
     return modified;
   }
 
-  @NonNull
-  public String getName() {
-    return name;
+  public String getDisplayName() {
+    return displayName;
   }
 
-  public void setName(@NonNull String name) {
-    this.name = name;
-  }
-
-  @NonNull
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(@NonNull User user) {
-    this.user = user;
-  }
-
-  public int getLength() {
-    return length;
-  }
-
-  public void setLength(int length) {
-    this.length = length;
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   @NonNull
-  public List<Word> getWords() {
-    return words;
+  public String getOauthKey() {
+    return oauthKey;
+  }
+
+  public void setOauthKey(@NonNull String oauthKey) {
+    this.oauthKey = oauthKey;
+  }
+
+  @NonNull
+  public List<Passphrase> getPassphrases() {
+    return passphrases;
   }
 
 }

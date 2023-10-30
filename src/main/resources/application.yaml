@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active:
+      - service
+      - local
+  datasource:
+    url: "jdbc:h2:file:./db/passphrases"
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
