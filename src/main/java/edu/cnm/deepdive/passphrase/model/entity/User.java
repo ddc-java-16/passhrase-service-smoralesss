@@ -39,7 +39,7 @@ public class User {
   private Long id;
 
   @NonNull
-  @Column(nullable = false, updatable = false, unique = true, columnDefinition = "UUID")
+  @Column(name ="externam_key", nullable = false, updatable = false, unique = true, columnDefinition = "UUID")
   @JsonProperty(namespace = "id", access = Access.READ_ONLY)
   private UUID key;
 

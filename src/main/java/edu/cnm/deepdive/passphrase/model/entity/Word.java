@@ -21,12 +21,12 @@ public class Word {
   private Long id;
 
   @NonNull
-  @Column(nullable = false, updatable = false)
+  @Column(name="content", nullable = false, updatable = false)
   @JsonValue
   private String value;
 
   @NonNull
-  @Column(nullable = false, updatable = false)
+  @Column(name ="position", nullable = false, updatable = false)
   @JsonIgnore
   private int order;
 

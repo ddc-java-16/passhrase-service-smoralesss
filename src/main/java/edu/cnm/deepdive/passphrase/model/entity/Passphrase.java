@@ -41,7 +41,7 @@ public class Passphrase {
   private Long id;
 
   @NonNull
-  @Column(updatable = false, nullable = false, unique = true, columnDefinition = "UUID")
+  @Column(name="external_key", updatable = false, nullable = false, unique = true, columnDefinition = "UUID")
   @JsonProperty(value = "id", access = Access.READ_ONLY)
   private UUID key;
 
