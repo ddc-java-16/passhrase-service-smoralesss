@@ -21,6 +21,6 @@ public class UserController {
 
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
   public User get() {
-    return userService.getCurrentUser()
+    return userService.getCurrentUser();
   }
 }
