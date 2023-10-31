@@ -13,3 +13,7 @@ spring:
   sql:
     init:
       mode: always
+
+
+diceware:
+  word-list: wordlist.txt
