@@ -20,6 +20,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -62,6 +64,8 @@ public class Passphrase {
 
   @NonNull
   @Column(nullable = false)
+  @NotBlank
+  @NotNull
   private String name;
 
   @NonNull
