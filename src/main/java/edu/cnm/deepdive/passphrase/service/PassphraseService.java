@@ -6,6 +6,7 @@ import edu.cnm.deepdive.passphrase.model.entity.User;
 import edu.cnm.deepdive.passphrase.model.entity.Word;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -86,5 +87,47 @@ public class PassphraseService implements AbstractPassphraseService {
           return repository.save(passphrase);
         })
         .orElseThrow();
+  }
+
+  @Override
+  public String updateName(User user, UUID key, String received) {
+    return repository
+        .findByUserAndKey(user, key)
+        .map((passphrase) -> {
+          passphrase.setName(received);
+          return repository.save(passphrase)
+        })
+        .map(Passphrase::getName)
+        .orElseThrow();
+  }
+
+  @Override
+  public List<String> updateWords(User user, UUID key, List<String> received) {
+    return repository
+        .findByUserAndKey(user, key)
+        .map((passphrase) -> {
+          passphrase.getWords().clear();
+          passphrase.getWords().addAll(
+              received
+                  .stream()
+                  .map((item) -> {
+                    Word word = new Word();
+                    word.setValue(item);
+                    word.setPassphrase(passphrase);
+                    return word;
+                  })
+                  .toList()
+          );
+          return repository.save(passphrase);
+        })
+        .map(Passphrase::getWords)
+        .map((words) -> words.stream().map(Word::getValue).toList())
+        .orElseThrow();
+  }
+
+
+  @Override
+  public List<String> generate(int length) {
+    return provider.generate(length);
   }
 }

@@ -18,4 +18,9 @@ public interface AbstractPassphraseService {
 
   Passphrase update(User user, UUID key, Passphrase received);
 
+  String updateName(User user, UUID key, String received);
+
+  List<String> updateWords(User user, UUID key, List<String> received);
+
+  List<String> generate(int length);
 }
