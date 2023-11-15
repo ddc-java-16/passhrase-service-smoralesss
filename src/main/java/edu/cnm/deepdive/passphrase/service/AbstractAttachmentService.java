@@ -2,6 +2,7 @@ package edu.cnm.deepdive.passphrase.service;
 
 import edu.cnm.deepdive.passphrase.model.entity.Attachment;
 import edu.cnm.deepdive.passphrase.model.entity.User;
+import edu.cnm.deepdive.passphrase.service.StorageService.StorageException;
 import java.io.IOException;
 import java.util.UUID;
 import org.springframework.core.io.Resource;
@@ -18,10 +19,11 @@ public interface AbstractAttachmentService {
 
   @NonNull
   Resource readContent(@NonNull User user, @NonNull UUID passphraseKey, @NonNull UUID attachmentKey)
-      throws IOException;
+      throws StorageException;
 
   @NonNull
-  Attachment store(@NonNull User user, @NonNull UUID passphraseKey, @NonNull MultipartFile file);
+  Attachment store(@NonNull User user, @NonNull UUID passphraseKey, @NonNull MultipartFile file)
+      throws StorageException;
 
   void delete(@NonNull User user, @NonNull UUID passphraseKey, @NonNull UUID attachmentKey);
 

@@ -37,10 +37,7 @@ import org.springframework.lang.NonNull;
 @Entity
 @Table(
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {
-            "user_id",
-            "name"
-        })
+        @UniqueConstraint(columnNames = {"user_id", "name"})
     }
 )
 @ValidPassphraseLength
@@ -91,6 +88,12 @@ public class Passphrase {
       cascade = CascadeType.ALL, orphanRemoval = true)
   @OrderBy("order ASC")
   private final List<Word> words = new LinkedList<>();
+
+  @NonNull
+  @OneToMany(mappedBy = "passphrase", fetch = FetchType.EAGER,
+      cascade = CascadeType.ALL, orphanRemoval = true)
+  @OrderBy("created DESC")
+  private final List<Attachment> attachments = new LinkedList<>();
 
   @Transient
   @JsonProperty(access = Access.WRITE_ONLY)
@@ -145,6 +148,10 @@ public class Passphrase {
   @NonNull
   public List<Word> getWords() {
     return words;
+  }
+
+  public List<Attachment> getAttachments() {
+    return attachments;
   }
 
   @PrePersist

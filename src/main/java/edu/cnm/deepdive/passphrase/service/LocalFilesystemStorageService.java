@@ -3,15 +3,14 @@ package edu.cnm.deepdive.passphrase.service;
 import edu.cnm.deepdive.passphrase.configuration.FileStorageConfiguration;
 import edu.cnm.deepdive.passphrase.configuration.FileStorageConfiguration.FilenameProperties;
 import edu.cnm.deepdive.passphrase.configuration.FileStorageConfiguration.FilenameProperties.TimestampProperties;
-import java.awt.MediaTracker;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.random.RandomGenerator;
@@ -24,10 +23,8 @@ import org.springframework.boot.system.ApplicationHome;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -35,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class LocalFilesystemStorageService implements StorageService {
 
   private static final String KEY_PATH_DELIMITER = FileSystems.getDefault().getSeparator();
-  private static final String KEY_PATH_FORMAT = "%s" + KEY_PATH_DELIMITER + "%s";
   private static final String INVALID_MEDIA_FORMAT = "%s is not allowed in this storage service.";
 
   private final RandomGenerator rng;
@@ -45,7 +41,6 @@ public class LocalFilesystemStorageService implements StorageService {
   private final DateFormat formatter;
   private final String filenameFormat;
   private final int randomizerLimit;
-  private final List<MediaType> contentTypes;
 
   @Autowired
   public LocalFilesystemStorageService(
@@ -61,10 +56,6 @@ public class LocalFilesystemStorageService implements StorageService {
     uploadDirectory.toFile().mkdirs();
     subdirectoryPattern = configuration.getSubdirectoryPattern();
     whitelist = configuration.getWhitelist();
-    contentTypes = whitelist
-        .stream()
-        .map(MediaType::valueOf)
-        .collect(Collectors.toList());
     filenameFormat = filenameProperties.getFormat();
     randomizerLimit = filenameProperties.getRandomizerLimit();
     formatter = new SimpleDateFormat(timestampProperties.getFormat());
@@ -72,9 +63,9 @@ public class LocalFilesystemStorageService implements StorageService {
   }
 
   @Override
-  public String store(MultipartFile file) throws IOException, MediaTypeException {
+  public String store(MultipartFile file) throws StorageException, MediaTypeException {
     if (!whitelist.contains(file.getContentType())) {
-      throw new MediaTypeException(String.format("Content type %s not supported for storage.", file.getContentType()));
+      throw new MediaTypeException(String.format(INVALID_MEDIA_FORMAT, file.getContentType()));
     }
     String originalFilename = file.getOriginalFilename();
     String newFilename = String.format(
@@ -87,18 +78,26 @@ public class LocalFilesystemStorageService implements StorageService {
     Path resolvedPath = uploadDirectory.resolve(subdirectory);
     //noinspection ResultOfMethodCallIgnored
     resolvedPath.toFile().mkdirs();
-    Files.copy(file.getInputStream(), resolvedPath.resolve(newFilename));
+    try {
+      Files.copy(file.getInputStream(), resolvedPath.resolve(newFilename));
+    } catch (IOException e) {
+      throw new StorageException(e);
+    }
     return newFilename;
   }
 
   @Override
-  public Resource retrieve(String key) throws IOException {
-    return new UrlResource(resolve(key).toUri());
+  public Resource retrieve(String key) throws StorageException {
+    try {
+      return new UrlResource(resolve(key).toUri());
+    } catch (MalformedURLException e) {
+      throw new StorageException(e);
+    }
   }
 
   @Override
   public boolean delete(String key)
-      throws IOException, UnsupportedOperationException, SecurityException {
+      throws StorageException, UnsupportedOperationException, SecurityException {
     return false;
   }
 
