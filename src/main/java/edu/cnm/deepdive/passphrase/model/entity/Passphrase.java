@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.cnm.deepdive.passphrase.validation.ValidPassphraseLength;
+import edu.cnm.deepdive.passphrase.view.UUIDSerializer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,6 +57,7 @@ public class Passphrase {
   @NonNull
   @Column(name = "external_key", updatable = false, nullable = false, unique = true, columnDefinition = "UUID")
   @JsonProperty(value = "id", access = Access.READ_ONLY)
+  @JsonSerialize(converter = UUIDSerializer.class)
   private UUID key;
 
   @NonNull

@@ -3,6 +3,8 @@ package edu.cnm.deepdive.passphrase.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.cnm.deepdive.passphrase.view.UUIDSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,6 +33,7 @@ public class Attachment {
   @NonNull
   @Column(name = "external_key", nullable = false, updatable = false)
   @JsonProperty(value = "id", access = Access.READ_ONLY)
+  @JsonSerialize(converter = UUIDSerializer.class)
   private UUID key;
 
   @NonNull
