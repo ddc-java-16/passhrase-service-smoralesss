@@ -6,16 +6,17 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
 @ConfigurationProperties(prefix = "file-storage")
+@Configuration
 public class FileStorageConfiguration {
 
-  /** Flag controlling whether the application home directory will be used as the file storage home. */
+  /** Flag controlling whether application home directory will be used as file storage home. */
   private boolean applicationHome = true;
-  private List<String> contentTypes;
   private String directory = "uploads";
   private Pattern subdirectoryPattern = Pattern.compile("^(.{4})(.{2})(.{2}).*$");
+  private Set<String> whitelist = new LinkedHashSet<>();
   private FilenameProperties filename;
 
   public boolean isApplicationHome() {
@@ -24,14 +25,6 @@ public class FileStorageConfiguration {
 
   public void setApplicationHome(boolean applicationHome) {
     this.applicationHome = applicationHome;
-  }
-
-  public List<String> getContentTypes() {
-    return contentTypes;
-  }
-
-  public void setContentTypes(List<String> contentTypes) {
-    this.contentTypes = contentTypes;
   }
 
   public String getDirectory() {
@@ -50,6 +43,14 @@ public class FileStorageConfiguration {
     this.subdirectoryPattern = subdirectoryPattern;
   }
 
+  public Set<String> getWhitelist() {
+    return whitelist;
+  }
+
+  public void setWhitelist(Set<String> whitelist) {
+    this.whitelist = whitelist;
+  }
+
   public FilenameProperties getFilename() {
     return filename;
   }
@@ -65,7 +66,6 @@ public class FileStorageConfiguration {
     private String format;
     private int randomizerLimit;
     private TimestampProperties timestamp;
-
 
     public String getUnknown() {
       return unknown;
@@ -120,6 +120,9 @@ public class FileStorageConfiguration {
       public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
       }
+
     }
+
   }
+
 }

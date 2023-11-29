@@ -4,11 +4,11 @@ import java.util.UUID;
 
 public interface UUIDStringifier {
 
-  String toString (UUID value) throws IllegalArgumentException;
+  String toString(UUID value) throws IllegalArgumentException;
 
   UUID toUUID(String value) throws IllegalArgumentException;
 
-  class DecodeException extends IllegalArgumentException{
+  class DecodeException extends IllegalArgumentException {
 
     public DecodeException() {
     }
@@ -25,4 +25,5 @@ public interface UUIDStringifier {
       super(cause);
     }
   }
+
 }

@@ -8,7 +8,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UUIDSerializer extends StdConverter<UUID, String> implements Converter<UUID, String> {
+public class UUIDSerializer extends StdConverter<UUID, String>
+    implements Converter<UUID, String> {
 
   private final UUIDStringifier stringifier;
 
@@ -21,4 +22,5 @@ public class UUIDSerializer extends StdConverter<UUID, String> implements Conver
   public String convert(UUID uuid) {
     return stringifier.toString(uuid);
   }
+
 }
